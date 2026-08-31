@@ -98,7 +98,7 @@ A rich, dark-mode **CopilotKit v1.4** web application is included under `ui/` fo
 
 ```bash
 # 1. Start Python CopilotKit API bridge
-python ui/server.py
+uv run python ui/server.py
 
 # 2. In another terminal, start Vite React frontend
 cd ui
