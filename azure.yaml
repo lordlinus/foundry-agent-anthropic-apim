@@ -4,14 +4,14 @@ requiredVersions:
   azd: '>=1.27.1'
   extensions:
     azure.ai.agents: '>=1.0.0-beta.9'
-name: agent-framework-agent-anthropic-apim
+name: foundry-agent-anthropic-apim
 services:
   # No model deployment: the agent talks to an Anthropic (Claude) model through
   # an API Management gateway, not a Foundry-deployed model. The project is
   # still required for hosting, identity, and session/conversation management.
   ai-project:
     host: azure.ai.project
-  agent-framework-agent-anthropic-apim:
+  anthropic-agent-basic:
     host: azure.ai.agent
     metadata:
       tags:
@@ -22,7 +22,7 @@ services:
         - Anthropic
         - APIM
         - Streaming
-    project: src/agent-framework-agent-anthropic-apim
+    project: src/anthropic-agent-basic
     language: python
     codeConfiguration:
       runtime: python_3_13
@@ -30,7 +30,7 @@ services:
     uses:
       - ai-project
     kind: hosted
-    name: agent-framework-agent-anthropic-apim
+    name: anthropic-agent-basic
     description: An Agent Framework agent that calls an Anthropic (Claude) model through an APIM gateway, hosted by Foundry.
     protocols:
       - protocol: responses
@@ -47,7 +47,7 @@ hooks:
   postprovision:
     posix:
       shell: sh
-      run: src/agent-framework-agent-anthropic-apim/hooks/postprovision.sh
+      run: src/anthropic-agent-basic/hooks/postprovision.sh
       interactive: true
 infra:
   provider: microsoft.foundry

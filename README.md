@@ -21,10 +21,10 @@
 git clone https://github.com/lordlinus/foundry-agent-anthropic-apim.git
 cd foundry-agent-anthropic-apim
 
-cp src/agent-framework-agent-anthropic-apim/.env.example src/agent-framework-agent-anthropic-apim/.env
+cp src/anthropic-agent-basic/.env.example src/anthropic-agent-basic/.env
 ```
 
-Configure `src/agent-framework-agent-anthropic-apim/.env`:
+Configure `src/anthropic-agent-basic/.env`:
 
 ```env
 ANTHROPIC_MODEL_NAME="claude-sonnet-5"
