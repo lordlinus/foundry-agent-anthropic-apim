@@ -78,6 +78,44 @@ services:
       resources:
         cpu: '0.5'
         memory: 1Gi
+  anthropic-agent-underwriting:
+    host: azure.ai.agent
+    metadata:
+      tags:
+        - Agent Framework
+        - AI Agent Hosting
+        - Azure AI AgentServer
+        - Responses Protocol
+        - Anthropic
+        - APIM
+        - Multi-Model
+        - Underwriting
+        - Judge
+        - Toolbox
+    project: src/anthropic-agent-underwriting
+    language: python
+    codeConfiguration:
+      runtime: python_3_13
+      entryPoint: main.py
+    uses:
+      - ai-project
+    kind: hosted
+    name: anthropic-agent-underwriting
+    description: Multi-model Commercial & Personal Underwriting Agent combining Haiku/Sonnet for initial tool processing with Opus for Executive Judge verdict & summary.
+    protocols:
+      - protocol: responses
+        version: 2.0.0
+    env:
+      ANTHROPIC_MODEL_NAME: ${ANTHROPIC_MODEL_NAME=claude-sonnet-5}
+      ANTHROPIC_FAST_MODEL_NAME: ${ANTHROPIC_FAST_MODEL_NAME=claude-haiku-4.5}
+      ANTHROPIC_OPUS_MODEL_NAME: ${ANTHROPIC_OPUS_MODEL_NAME=claude-opus-4.7}
+      APIM_ANTHROPIC_BASE_URL: ${APIM_ANTHROPIC_BASE_URL}
+      APIM_SUBSCRIPTION_KEY: ${APIM_SUBSCRIPTION_KEY}
+      FOUNDRY_TOOLBOX_ENDPOINT: ${FOUNDRY_TOOLBOX_ENDPOINT}
+    container:
+      resources:
+        cpu: '0.5'
+        memory: 1Gi
 hooks:
   postprovision:
     posix:

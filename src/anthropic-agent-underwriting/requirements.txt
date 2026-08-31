@@ -1,0 +1,4 @@
+agent-framework-foundry-hosting==1.0.0b260821
+agent-framework-anthropic
+azure-identity
+debugpy
