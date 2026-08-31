@@ -1,0 +1,21 @@
+CLINICAL ENCOUNTER NOTE & PRIOR AUTHORIZATION REQUEST
+
+Patient Name: Jane Doe
+DOB: 1968-05-14 (Age 58)
+Member ID: MEM-9948210
+Attending Physician: Dr. Marcus Vance, MD (NPI: 1234567890)
+Specialty: Orthopedic Surgery
+
+Clinical History & Physical Exam:
+Patient presents with severe right knee pain and progressive functional impairment over 18 months due to severe osteoarthritis. Failed conservative therapies including 6 months of physical therapy, NSAIDs (Meloxicam 15mg daily), and two intra-articular corticosteroid injections with minimal transient relief.
+
+Physical Exam:
+Right knee: Significant joint space narrowing, medial compartment bone-on-bone contact, lateral osteophytes. Flexion restricted to 95 degrees, antalgic gait.
+
+Diagnoses:
+1. Severe primary osteoarthritis of right knee (ICD-10: M17.11)
+2. Chronic pain syndrome (ICD-10: G89.4)
+
+Requested Procedure:
+- Right Total Knee Arthroplasty (CPT 27447)
+- Proposed Inpatient Admission: 2 Days

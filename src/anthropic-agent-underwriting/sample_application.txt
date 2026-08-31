@@ -1,0 +1,21 @@
+COMMERCIAL INSURANCE UNDERWRITING APPLICATION
+
+Applicant Details:
+- Business Name: Apex Logistics & Supply Chain Solutions LLC
+- Entity Type: Limited Liability Company (LLC)
+- Industry / NAICS: 484121 (General Freight Trucking, Long-Distance)
+- Operating History: 8 Years
+- Annual Revenue: $4,500,000
+- Total Business Debt: $1,200,000
+- Annual Insurance Premiums: $180,000
+- 3-Year Historical Claims Total: $25,000 (2 minor cargo claims)
+
+Requested Coverage:
+- Commercial Auto & Fleet Liability: $2,000,000 Primary Limit
+- General Liability: $1,000,000 / $2,000,000 Aggregate
+- Inland Marine / Cargo: $500,000
+
+Risk Profile & Compliance Notes:
+- Fleet Size: 18 Class 8 Tractors, all fitted with telematics and speed limiters.
+- Driver Safety: 100% of drivers hold valid CDL-A with clean MVRs (0 major violations).
+- Sanctions & KYC Check: Clean. OFAC / PEP check passed with 0 matches.
