@@ -43,6 +43,40 @@ services:
       resources:
         cpu: '0.5'
         memory: 1Gi
+  anthropic-agent-healthcare:
+    host: azure.ai.agent
+    metadata:
+      tags:
+        - Agent Framework
+        - AI Agent Hosting
+        - Azure AI AgentServer
+        - Responses Protocol
+        - Anthropic
+        - APIM
+        - Healthcare
+        - MCP
+        - Skills
+    project: src/anthropic-agent-healthcare
+    language: python
+    codeConfiguration:
+      runtime: python_3_13
+      entryPoint: main.py
+    uses:
+      - ai-project
+    kind: hosted
+    name: anthropic-agent-healthcare
+    description: Healthcare Agent featuring Anthropic Claude via APIM with Toolbox, Healthcare Skills, and MCP tools (NPI, PubMed, ICD-10, CMS Coverage, Clinical Trials).
+    protocols:
+      - protocol: responses
+        version: 2.0.0
+    env:
+      ANTHROPIC_MODEL_NAME: ${ANTHROPIC_MODEL_NAME=claude-sonnet-5}
+      APIM_ANTHROPIC_BASE_URL: ${APIM_ANTHROPIC_BASE_URL}
+      APIM_SUBSCRIPTION_KEY: ${APIM_SUBSCRIPTION_KEY}
+    container:
+      resources:
+        cpu: '0.5'
+        memory: 1Gi
 hooks:
   postprovision:
     posix:

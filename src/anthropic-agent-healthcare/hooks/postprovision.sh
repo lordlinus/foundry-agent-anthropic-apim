@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# The microsoft.foundry azd infra provider does not create an Application
-# Insights resource when azure.yaml declares no model deployment, so the
-# Foundry project's Traces tab shows "Create or connect an App Insights
-# resource" until someone clicks Connect in the portal. This hook creates
-# (idempotently) a Log Analytics workspace + Application Insights component
-# and wires it to the project as an AppInsights connection, matching what
-# the portal's Connect wizard does.
-
 RG="${AZURE_RESOURCE_GROUP:?AZURE_RESOURCE_GROUP not set}"
 LOCATION="${AZURE_LOCATION:?AZURE_LOCATION not set}"
 ACCOUNT="${AZURE_AI_ACCOUNT_NAME:?AZURE_AI_ACCOUNT_NAME not set}"
@@ -51,9 +43,6 @@ az rest --method put \
   --url "https://management.azure.com/subscriptions/${SUB}/resourceGroups/${RG}/providers/Microsoft.CognitiveServices/accounts/${ACCOUNT}/projects/${PROJECT}/connections/${CONN_NAME}?api-version=2025-04-01-preview" \
   --body "$BODY" >/dev/null
 
-# Log Analytics Reader lets the signed-in user view traces in the portal;
-# Privileged Monitoring Data Reader is additionally required if the workspace
-# has protected tables. Best-effort: don't fail provisioning over RBAC.
 USER_ID=$(az ad signed-in-user show --query id -o tsv 2>/dev/null || true)
 if [ -n "$USER_ID" ]; then
   az role assignment create --assignee-object-id "$USER_ID" --assignee-principal-type User \

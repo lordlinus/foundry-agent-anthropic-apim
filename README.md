@@ -1,4 +1,11 @@
-# Anthropic via APIM — Foundry Hosted Agent
+# Anthropic via APIM — Foundry Hosted Agents
+
+This repository contains Microsoft Foundry hosted agents that route Anthropic (Claude) requests through an Azure API Management (APIM) gateway:
+
+1. **`anthropic-agent-basic`**: Minimal agent setup.
+2. **`anthropic-agent-healthcare`**: Healthcare specialist agent showcasing **Foundry Toolbox**, **Skills**, and **MCP Server connections** (NPI Registry, ICD-10 Codes, CMS Coverage, Clinical Trials, PubMed).
+
+---
 
 ## Prerequisites
 
@@ -21,10 +28,14 @@
 git clone https://github.com/lordlinus/foundry-agent-anthropic-apim.git
 cd foundry-agent-anthropic-apim
 
+# Configure Basic Agent
 cp src/anthropic-agent-basic/.env.example src/anthropic-agent-basic/.env
+
+# Configure Healthcare Agent
+cp src/anthropic-agent-healthcare/.env.example src/anthropic-agent-healthcare/.env
 ```
 
-Configure `src/anthropic-agent-basic/.env`:
+Configure the `.env` files with your APIM details:
 
 ```env
 ANTHROPIC_MODEL_NAME="claude-sonnet-5"
@@ -37,24 +48,32 @@ APIM_SUBSCRIPTION_KEY="<your-apim-subscription-key>"
 ## 2. Local Development
 
 ### Start local agent server
+
 ```bash
-azd ai agent run
+# Run basic agent locally
+azd ai agent run anthropic-agent-basic
+
+# Run healthcare agent locally (with MCP tools & Skills)
+azd ai agent run anthropic-agent-healthcare
 ```
 
 ### Invoke local agent
 
 ```bash
-# First turn (starts session)
-azd ai agent invoke --local "Hello! Remember that my favorite color is blue."
+# Basic Agent
+azd ai agent invoke anthropic-agent-basic --local "Hello!"
 
-# Second turn (resumes conversation automatically)
-azd ai agent invoke --local "What is my favorite color?"
+# Healthcare Agent (queries NPI Registry / ICD-10 / PubMed MCPs)
+azd ai agent invoke anthropic-agent-healthcare --local "Review prior auth for knee replacement for NPI 1234567890."
 
-# Resume specific session
-azd ai agent invoke --local --session-id <session-id> "Continue conversation..."
+# Resume conversation automatically
+azd ai agent invoke anthropic-agent-healthcare --local "What were the findings?"
+
+# Resume specific session ID
+azd ai agent invoke anthropic-agent-healthcare --local --session-id <session-id> "Continue analysis"
 
 # Force a new session
-azd ai agent invoke --local --new-session "Start new conversation"
+azd ai agent invoke anthropic-agent-healthcare --local --new-session "Start fresh"
 ```
 
 ---
@@ -68,18 +87,17 @@ azd provision
 azd deploy
 ```
 
-### Invoke deployed agent
+### Invoke deployed agents
 
 ```bash
-# Continue conversation
-azd ai agent invoke "Hello from the cloud agent!"
-azd ai agent invoke "What did I say in my last message?"
+# Invoke Basic Agent
+azd ai agent invoke anthropic-agent-basic "Hello from the cloud!"
+
+# Invoke Healthcare Agent
+azd ai agent invoke anthropic-agent-healthcare "Search PubMed for clinical trial protocols on SGLT2 inhibitors."
 
 # Resume specific session
-azd ai agent invoke --session-id <session-id> "Resume work"
-
-# Force a new session
-azd ai agent invoke --new-session "Start new conversation"
+azd ai agent invoke anthropic-agent-healthcare --session-id <session-id> "Resume session"
 ```
 
 
