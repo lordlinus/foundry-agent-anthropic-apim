@@ -43,5 +43,11 @@ services:
       resources:
         cpu: '0.5'
         memory: 1Gi
+hooks:
+  postprovision:
+    posix:
+      shell: sh
+      run: src/agent-framework-agent-anthropic-apim/hooks/postprovision.sh
+      interactive: true
 infra:
   provider: microsoft.foundry
