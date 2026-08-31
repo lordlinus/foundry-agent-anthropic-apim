@@ -90,7 +90,31 @@ azd ai agent invoke anthropic-agent-underwriting --local --new-session "Start fr
 
 ---
 
-## 3. Deploy to Azure AI Foundry
+## 3. CopilotKit Studio UI (Demo Showcase)
+
+A rich, dark-mode **CopilotKit v1.4** web application is included under `ui/` for in-person interactive demos:
+
+### Start CopilotKit UI & Backend Bridge
+
+```bash
+# 1. Start Python CopilotKit API bridge
+python ui/server.py
+
+# 2. In another terminal, start Vite React frontend
+cd ui
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` to interact with the demo studio:
+- **Underwriting Executive Dashboard**: Interactive Multi-Model pipeline (`claude-haiku-4.5` / `claude-sonnet-5` ratio tools &rarr; `claude-opus-4.7` Executive Judge), Financial Ratios audit meters, and 1-click sample document evaluation.
+- **Healthcare Specialist Panel**: Connected MCP tools (NPI Registry, ICD-10, CMS Coverage, Clinical Trials, PubMed) and Clinical Prior Authorization note extractor.
+- **Basic APIM Gateway Panel**: Core APIM routing metrics and model tier inspector.
+- **CopilotKit Chat Interface**: Custom dark-mode streaming assistant with quick prompt launchers and action handlers.
+
+---
+
+## 4. Deploy to Azure AI Foundry
 
 ### Provision & Deploy
 
