@@ -1,104 +1,129 @@
-# Anthropic (Claude) via APIM — Foundry Hosted Agent
+# Anthropic via APIM — Foundry Hosted Agent
 
-An [Agent Framework](https://github.com/microsoft/agent-framework) agent hosted on **Microsoft Foundry** that talks to an **Anthropic (Claude) model through an Azure API Management (APIM) gateway**, using the **Responses protocol**.
-
-## Why this sample exists
-
-The official [`01-basic`](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/python/hosted-agents/agent-framework/responses/01-basic) sample uses `FoundryChatClient`, which speaks the OpenAI Responses protocol to a Foundry-deployed model. Claude models fronted by APIM (or Azure AI Foundry directly) are **Anthropic Messages-protocol only** — there is no OpenAI-compatible route — so `FoundryChatClient` cannot reach them. This sample uses `AnthropicFoundryClient` from [`agent-framework-anthropic`](https://pypi.org/project/agent-framework-anthropic/) instead, pointed at an APIM gateway that fronts one or more Anthropic backends.
-
-See [Filed upstream: microsoft-foundry/foundry-samples#947](https://github.com/microsoft-foundry/foundry-samples/issues/947) — this repo is a standalone, runnable version of that proposal.
-
-## How it works
-
-See [main.py](src/agent-framework-agent-anthropic-apim/main.py). `AnthropicFoundryClient(model=..., base_url=..., api_key=...)` sends the standard Anthropic SDK `x-api-key` header, which APIM can map to whatever header/auth scheme the upstream Anthropic backend expects. The agent is served via `ResponsesHostServer`, so Foundry's hosted-agent session, conversation, and history management (`agent_session_id`, `previous_response_id`) work exactly as they do for Foundry-deployed models — swapping the chat client does not change how sessions/state are managed, because that is owned by the hosting layer, not the chat client.
+This repository provides a Microsoft Foundry hosted agent that routes Anthropic (Claude) requests through an Azure API Management (APIM) gateway using the Responses protocol.
 
 ## Prerequisites
 
-1. An APIM gateway with an API that proxies `POST /v1/messages` to an Anthropic-compatible backend (Anthropic's own API, or Claude models deployed on Azure AI Foundry), forwarding the caller's subscription key as `x-api-key` (and defaulting `anthropic-version` if the backend requires it).
-2. The gateway's base URL up to (not including) `/v1/messages`, e.g. `https://<apim-name>.azure-api.net/anthropic`.
-3. A subscription key authorized for that API.
+Make sure the following prerequisites are installed and configured:
 
-## Option 1: Azure Developer CLI (`azd`)
+1. **Azure Developer CLI (`azd`)** (>= 1.27.1)
+   - Install: https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd
+   - Verify: `azd version`
+2. **Foundry Extension for `azd`**
+   - Install: `azd ext install microsoft.foundry`
+3. **Azure Authentication**
+   - Run: `azd auth login`
+4. **APIM Gateway & Model Details**
+   - APIM Anthropic Base URL (e.g., `https://<apim-name>.azure-api.net/anthropic`)
+   - APIM Subscription Key
+   - Model name (e.g., `claude-sonnet-5`)
 
-### Prerequisites
+---
 
-1. **Azure Developer CLI (`azd`)** — [Install azd](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd)
-2. Install the AI agent extension:
-   ```bash
-   azd ext install microsoft.foundry
-   ```
-3. Authenticate:
-   ```bash
-   azd auth login
-   ```
+## 1. Setup & Environment
 
-### Initialize the agent project
-
-No cloning required. Create a new folder and initialize from the manifest:
+Clone the repository and copy the sample `.env` file:
 
 ```bash
-mkdir my-anthropic-apim-agent && cd my-anthropic-apim-agent
+git clone https://github.com/lordlinus/foundry-agent-anthropic-apim.git
+cd foundry-agent-anthropic-apim
 
-azd ai agent init -m https://github.com/lordlinus/foundry-agent-anthropic-apim/blob/main/azure.yaml
+cp src/agent-framework-agent-anthropic-apim/.env.example src/agent-framework-agent-anthropic-apim/.env
 ```
 
-Follow the prompts to configure your Foundry project. If you don't have an existing Foundry project, `azd ai agent init` will guide you through creating one.
+Edit `src/agent-framework-agent-anthropic-apim/.env` with your APIM details:
 
-### Configure the APIM connection
-
-```bash
-azd env set ANTHROPIC_MODEL_NAME claude-sonnet-5
-azd env set APIM_ANTHROPIC_BASE_URL https://<apim-name>.azure-api.net/anthropic
-azd env set APIM_SUBSCRIPTION_KEY <your-apim-subscription-key>
+```env
+ANTHROPIC_MODEL_NAME="claude-sonnet-5"
+APIM_ANTHROPIC_BASE_URL="https://<apim-name>.azure-api.net/anthropic"
+APIM_SUBSCRIPTION_KEY="<your-apim-subscription-key>"
 ```
 
-### Provision Azure resources (if needed)
+---
 
-```bash
-azd provision
-```
+## 2. Local Development
 
-### Run the agent locally
+### Start the local agent server
+From the repository root:
 
 ```bash
 azd ai agent run
 ```
+*The agent will run locally at `http://localhost:8088`.*
 
-The agent host will start on `http://localhost:8088`.
+### Send messages to the local agent
 
-### Invoke the local agent
+Open a second terminal window to interact with the running agent:
 
-In a separate terminal, from the project directory:
-
+**First turn (starts a session):**
 ```bash
-azd ai agent invoke --local "Say hello and tell me which model you are."
+azd ai agent invoke --local "Hello! Remember that my favorite color is blue."
 ```
 
-### Deploy to Foundry
+**Second turn (resumes the conversation automatically):**
+```bash
+azd ai agent invoke --local "What is my favorite color?"
+```
+
+### Resuming or managing sessions locally
+
+- **Resume a specific session/conversation:**
+  ```bash
+  azd ai agent invoke --local --session-id <session-id> "Continue our previous conversation..."
+  ```
+- **Start a new session (clear history):**
+  ```bash
+  azd ai agent invoke --local --new-session "Hello fresh start!"
+  ```
+
+---
+
+## 3. Deploy to Azure AI Foundry
+
+### Provision & Deploy
 
 ```bash
+azd provision
 azd deploy
 ```
 
 ### Invoke the deployed agent
 
+**Start / Continue conversation:**
 ```bash
-azd ai agent invoke "Say hello and tell me which model you are."
+azd ai agent invoke "Hello from the cloud agent!"
+azd ai agent invoke "What did I say in my last message?"
 ```
 
-## Option 2: VS Code (Foundry Toolkit)
+**Resume a specific session on Foundry:**
+```bash
+azd ai agent invoke --session-id <session-id> "Resume work"
+```
 
-1. Install the **[Foundry Toolkit](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio)** and **[Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)** extensions.
-2. Create a Python environment and install `src/agent-framework-agent-anthropic-apim/requirements.txt`.
-3. Copy [.env.example](src/agent-framework-agent-anthropic-apim/.env.example) to `.env` in that same directory and fill in `ANTHROPIC_MODEL_NAME`, `APIM_ANTHROPIC_BASE_URL`, `APIM_SUBSCRIPTION_KEY`.
-4. Press **F5** to start the agent — the **Agent Inspector** opens automatically.
+**Start a new cloud session:**
+```bash
+azd ai agent invoke --new-session "Start new conversation"
+```
 
-## Verified end-to-end (2026-08-31)
+---
 
-- `azd ai agent run` + `azd ai agent invoke --local` — single- and multi-turn (history-preserving) responses against a live APIM gateway routing to Claude.
-- `azd provision` + `azd deploy` + `azd ai agent invoke` — deployed to a Foundry project and verified the same behavior on the live hosted agent (cold start ~15s, warm ~2-7s), including session continuity across turns.
+## 4. Alternative: Direct Python Run
 
-## Next steps
+If you want to run the agent without `azd`:
 
-- [Basic Hosted Agent](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/python/hosted-agents/agent-framework/responses/01-basic) — the OpenAI/Foundry-model equivalent of this sample
-- [Manage hosted agents](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/manage-hosted-agent) — monitor and manage deployed agents
+```bash
+cd src/agent-framework-agent-anthropic-apim
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
+```
+
+---
+
+## Key Files
+
+- `azure.yaml` — Foundry project & agent hosting manifest
+- `src/agent-framework-agent-anthropic-apim/main.py` — Agent entry point using `AnthropicFoundryClient` & `ResponsesHostServer`
+- `src/agent-framework-agent-anthropic-apim/.env.example` — Configuration template
+
