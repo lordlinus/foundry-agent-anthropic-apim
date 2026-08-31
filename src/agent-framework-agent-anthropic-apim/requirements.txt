@@ -1,4 +1,7 @@
-agent-framework-foundry-hosting>=1.0.0a260630
+# Pinned exact: newer builds (>=1.0.0b260827) pull in azure-identity>=1.26.0b2 /
+# azure-ai-agentserver-responses>=2.2.0b1, which crash hard on IMDS ConnectTimeout
+# when no Azure managed identity endpoint is reachable (e.g. local dev).
+agent-framework-foundry-hosting==1.0.0b260821
 agent-framework-anthropic
 
 # debugpy enables local debugging of this agent with the Foundry Toolkit VS Code extension.
