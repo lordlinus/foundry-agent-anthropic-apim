@@ -2,13 +2,25 @@
 
 import os
 
-from agent_framework import Agent, MCPStreamableHTTPTool, FileSkillsSource
+from agent_framework import Agent, MCPStreamableHTTPTool
 from agent_framework_anthropic import AnthropicFoundryClient
 from agent_framework_foundry_hosting import ResponsesHostServer
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+
+
+def get_entra_auth_headers(kwargs=None):
+    """Acquire Microsoft Entra bearer token for Foundry Toolbox endpoint."""
+    try:
+        from azure.identity import DefaultAzureCredential
+
+        credential = DefaultAzureCredential()
+        token = credential.get_token("https://ai.azure.com/.default")
+        return {"Authorization": f"Bearer {token.token}"}
+    except Exception:
+        return {}
 
 
 def main():
@@ -57,11 +69,23 @@ def main():
         ),
     ]
 
+    # Dynamically connect to Foundry Toolbox MCP Endpoint if configured
+    toolbox_endpoint = os.getenv("FOUNDRY_TOOLBOX_ENDPOINT")
+    if toolbox_endpoint:
+        mcp_tools.append(
+            MCPStreamableHTTPTool(
+                name="foundry_toolbox",
+                url=toolbox_endpoint,
+                header_provider=get_entra_auth_headers,
+                description="Connects to the Azure AI Foundry Project Toolbox MCP Endpoint.",
+            )
+        )
+
     instructions = (
         "You are an AI Healthcare Specialist agent hosted on Microsoft Foundry. "
-        "You have access to healthcare domain skills (Prior Auth, ICD-10 Coding, Clinical Note Extraction) "
-        "and live MCP servers (NPI Registry, ICD-10 Codes, CMS Coverage, Clinical Trials, PubMed). "
-        "Provide precise, professional healthcare assistance with verified citations."
+        "You have access to healthcare domain skills (Prior Auth, ICD-10 Coding, Clinical Note Extraction), "
+        "live MCP servers (NPI Registry, ICD-10 Codes, CMS Coverage, Clinical Trials, PubMed), "
+        "and Azure AI Foundry Toolbox tools. Provide precise, professional assistance."
     )
 
     agent = Agent(
@@ -78,3 +102,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
